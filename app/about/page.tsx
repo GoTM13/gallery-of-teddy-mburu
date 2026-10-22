@@ -7,28 +7,19 @@ export default function About() {
     <main className="max-w-3xl mx-auto px-5 py-14">
       <h1 className="text-4xl font-semibold tracking-tight">About Teddy</h1>
       <p className="mt-4 leading-relaxed text-soft">
-        I'm a Nairobi-based photographer and printmaker. My work follows the light — botanicals,
-        streets, and everything in between. Everything here starts as my own frame, printed as a
-        hand-signed archival piece from a limited edition.
+        I'm an artist, based in Nairobi. My work begins with light — the way it lingers on a leaf,
+        slips between buildings, or settles quietly on an ordinary moment. I follow it through
+        botanicals, streets, and the space in between. Each image begins with a moment that asks to
+        be held a little bit longer.
       </p>
       <p className="mt-3 leading-relaxed text-soft">
-        I ship across Kenya and worldwide, and I'm always happy to talk about a piece before you
-        commit — that's why the shop works on enquiries, not faceless checkouts.
+        The pieces start as a photograph, turned into a limited series print, hand signed and framed.
       </p>
-      <div className="mt-10 grid sm:grid-cols-3 gap-4 text-sm">
-        <div className="border border-ink/10 rounded-xl p-4 bg-white">
-          <div className="font-semibold">📍 Studio</div>
-          <p className="mt-1 text-soft">Nairobi, Kenya — visits by appointment.</p>
-        </div>
-        <div className="border border-ink/10 rounded-xl p-4 bg-white">
-          <div className="font-semibold">✉️ Contact</div>
-          <p className="mt-1 text-soft">hello@galleryofteddymburu.com</p>
-        </div>
-        <div className="border border-ink/10 rounded-xl p-4 bg-white">
-          <div className="font-semibold">📸 Instagram</div>
-          <p className="mt-1 text-soft">@galleryofteddymburu — new drops first.</p>
-        </div>
-      </div>
+      <p className="mt-3 leading-relaxed text-soft">
+        I ship across Kenya and around the world, but I believe art travels best when it begins with
+        a conversation. If a piece speaks to you or stirs a memory, I'd be delighted to hear from you
+        and share more, before the piece finds its new home.
+      </p>
       <h2 className="mt-14 text-2xl font-semibold">Frequently asked</h2>
       <div className="mt-4 space-y-3 text-sm">
         <details className="border border-ink/10 rounded-xl bg-white p-4">
@@ -41,7 +32,7 @@ export default function About() {
         </details>
         <details className="border border-ink/10 rounded-xl bg-white p-4">
           <summary className="font-medium cursor-pointer">What happens after I enquire?</summary>
-          <p className="mt-2 text-soft">After you enquire, we'll sort out delivery and everything else personally.</p>
+          <p className="mt-2 text-soft">After you enquire, we'll reach out to confirm details and plan on delivery.</p>
         </details>
       </div>
     </main>
