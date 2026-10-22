@@ -6,7 +6,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Print, fmtKES } from "@/lib/prints";
 
 const THEMES = ["All", "Urban", "Landscape", "Abstract", "Wildlife", "Botanical"];
-const HEIGHTS = ["h-60", "h-80", "h-56", "h-72", "h-64"];
 
 export default function Gallery({ prints }: { prints: Print[] }) {
   const [theme, setTheme] = useState("All");
@@ -47,8 +46,9 @@ export default function Gallery({ prints }: { prints: Print[] }) {
                 transition={{ duration: 0.4, delay: i * 0.05 }}
               >
                 <Link href={`/print/${p.id}`} className="group w-full mb-5 break-inside-avoid block">
-                  <div className={`rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-shadow bg-white outline outline-1 outline-ink/10 ${HEIGHTS[i % 5]}`}>
-                    <img src={p.image} alt={p.title} loading="lazy" className="w-full h-full object-cover" />
+                  <div className="rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-shadow bg-white outline outline-1 outline-ink/10">
+                    {/* full image, natural aspect ratio — no cropping */}
+                    <img src={p.image} alt={p.title} loading="lazy" className="w-full h-auto block" />
                   </div>
                   <div className="mt-2.5 flex justify-between items-baseline">
                     <span className="font-medium">{p.title}</span>
