@@ -5,7 +5,7 @@ import { Print, priceFor, fmtKES } from "@/lib/prints";
 
 const FRAMES = [
   { id: "black", label: "Black wood", color: "#2b2b2b" },
-  { id: "walnut", label: "Walnut", color: "#6b4430" },
+  { id: "maple", label: "Maple", color: "#c19a6b" },
 ];
 
 const DIMENSIONS: Record<string, string> = {
