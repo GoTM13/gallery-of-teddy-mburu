@@ -8,54 +8,41 @@ const FRAMES = [
   { id: "walnut", label: "Walnut", color: "#6b4430" },
 ];
 
-// Room scenes — photos hosted on Cloudinary as:
-//   living_room_wall.jpg  /  bedroom_wall.jpg
-const SCENES = [
-  {
-    id: "living",
-    label: "Living room",
-    image: "https://res.cloudinary.com/hp5e1kxp/image/upload/f_auto,q_auto,w_1200/living_room_wall.jpg",
-    wallWidthCm: 350,   // approximate real width of the visible wall in the photo
-    hangTop: "26%",     // top edge of the frame, as % of the photo height
-  },
-  {
-    id: "bedroom",
-    label: "Bedroom",
-    image: "https://res.cloudinary.com/hp5e1kxp/image/upload/f_auto,q_auto,w_1200/bedroom_wall.jpg",
-    wallWidthCm: 300,
-    hangTop: "22%",
-  },
-];
+const DIMENSIONS: Record<string, string> = {
+  A4: "21 × 29.7 cm",
+  A3: "29.7 × 42 cm",
+  A2: "42 × 59.4 cm",
+};
 
-// Real print widths in cm (landscape orientation assumed; height follows the image aspect).
-const PRINT_WIDTH_CM: Record<string, number> = { A4: 21, A3: 29.7, A2: 42 };
-const FRAME_BORDER_CM = 3.4; // moulding width, both sides ≈ 1.7cm each
+// Image preview width per selected size — larger size, larger view.
+const VIEW_SCALE: Record<string, string> = { A4: "74%", A3: "96%", A2: "100%" };
 
-// Visual boost so prints read clearly on camera without looking doll-sized.
-// 1.0 = strictly real-world proportions. ~1.4 is a good marketing balance.
-const EXAGGERATION = 1.4;
+export default function PrintConfig({ prints, initialId }: { prints: Print[]; initialId: string }) {
+  const initialIndex = Math.max(0, prints.findIndex((p) => p.id === initialId));
+  const [index, setIndex] = useState(initialIndex);
+  const print = prints[index] ?? prints[0];
 
-export default function PrintConfig({ print }: { print: Print }) {
-  const [size, setSize] = useState(print.sizes.includes("A4") ? "A4" : print.sizes[0]);
+  const defaultSize = print.sizes.includes("A4") ? "A4" : print.sizes[0];
+  const [size, setSize] = useState(defaultSize);
   const [frame, setFrame] = useState("black");
-  const [scene, setScene] = useState("living");
-  const [sceneOk, setSceneOk] = useState<Record<string, boolean>>({});
   const [sent, setSent] = useState(false);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [note, setNote] = useState("");
+
   const price = priceFor(print, size);
   const frameColor = FRAMES.find((f) => f.id === frame)?.color ?? "#2b2b2b";
   const frameLabel = FRAMES.find((f) => f.id === frame)?.label;
-  const sceneObj = SCENES.find((s) => s.id === scene) ?? SCENES[0];
-  const sceneLoaded = sceneOk[scene] !== false;
-
-  // Physical calibration: on-screen frame width as a share of the wall.
-  const printWidthCm = PRINT_WIDTH_CM[size] ?? 21;
-  const frameWidthCm = printWidthCm + FRAME_BORDER_CM;
-  const scalePercent = Math.min((frameWidthCm / sceneObj.wallWidthCm) * 100 * EXAGGERATION, 55);
-
   const valid = name.trim().length > 1 && /\S+@\S+\.\S+/.test(email);
+  const view = VIEW_SCALE[size] ?? "96%";
+
+  function goTo(i: number) {
+    const next = (i + prints.length) % prints.length;
+    setIndex(next);
+    const p = prints[next];
+    setSize(p.sizes.includes("A4") ? "A4" : p.sizes[0]);
+    setSent(false);
+  }
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -72,68 +59,54 @@ export default function PrintConfig({ print }: { print: Print }) {
 
   return (
     <div className="mt-4 grid md:grid-cols-2 gap-8">
+      {/* ---------- Image viewer + carousel ---------- */}
       <div>
-        <div
-          className="relative rounded-2xl overflow-hidden shadow-xl"
-          style={{
-            aspectRatio: "4/3",
-            background: sceneLoaded
-              ? undefined
-              : scene === "bedroom"
-                ? "linear-gradient(180deg, #f2ead9 0%, #ece2cf 72%, #d8c8b1 72%, #c5b196 100%)"
-                : "linear-gradient(180deg, #efe6d8 0%, #e9ddcc 70%, #d9c9b2 70%, #c9b69c 100%)",
-          }}
-        >
-          {sceneLoaded && (
-            <img
-              key={scene}
-              src={sceneObj.image}
-              alt={sceneObj.label}
-              className="absolute inset-0 w-full h-full object-cover"
-              onError={() => setSceneOk((prev) => ({ ...prev, [scene]: false }))}
-            />
-          )}
-          <div
-            className="absolute left-1/2 -translate-x-1/2"
-            style={{
-              width: scalePercent + "%",
-              top: sceneObj.hangTop,
-              transition: "width 0.4s ease, top 0.4s ease",
-            }}
-          >
-            <div style={{ background: frameColor, padding: "3%", borderRadius: 2, boxShadow: "0 14px 30px rgba(30,20,10,0.45)" }}>
-              <img src={print.image} alt={print.title} className="w-full block" />
-            </div>
-            {/* soft shadow beneath the frame, grounds it on the wall */}
-            <div
-              style={{
-                height: 8,
-                margin: "2% 6% 0 6%",
-                background: "rgba(30,20,10,0.18)",
-                filter: "blur(6px)",
-                borderRadius: "50%",
-              }}
-            />
-          </div>
-        </div>
-        <div className="mt-2 flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-xs text-soft">
-          <label className="inline-flex items-center gap-1.5">
-            <span className="uppercase tracking-wider text-ochre">See on wall</span>
-            <select
-              value={scene}
-              onChange={(e) => setScene(e.target.value)}
-              className="border border-ink/25 rounded-lg px-2 py-1 text-xs bg-white text-ink"
+        <div className="relative rounded-2xl bg-sand border border-ink/10 overflow-hidden flex items-center justify-center" style={{ aspectRatio: "4/3" }}>
+          {prints.length > 1 && (
+            <button
+              onClick={() => goTo(index - 1)}
+              aria-label="Previous piece"
+              className="absolute left-3 z-10 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white/90 border border-ink/15 text-ink hover:bg-white shadow flex items-center justify-center text-lg"
             >
-              {SCENES.map((s) => (
-                <option key={s.id} value={s.id}>{s.label}</option>
-              ))}
-            </select>
-          </label>
-          <span>·</span>
-          <span>{size} · {frameLabel} · {size === "A3" ? "29.7 × 42 cm" : "21 × 29.7 cm"}</span>
+              ‹
+            </button>
+          )}
+          <div className="transition-all duration-500" style={{ width: view, padding: "1.2%" }}>
+            <div style={{ background: frameColor, padding: "2.5%", borderRadius: 3, boxShadow: "0 16px 36px rgba(30,20,10,0.35)" }}>
+              <img key={print.id} src={print.image} alt={print.title} className="w-full block" />
+            </div>
+          </div>
+          {prints.length > 1 && (
+            <button
+              onClick={() => goTo(index + 1)}
+              aria-label="Next piece"
+              className="absolute right-3 z-10 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white/90 border border-ink/15 text-ink hover:bg-white shadow flex items-center justify-center text-lg"
+            >
+              ›
+            </button>
+          )}
         </div>
+        <p className="mt-2 text-xs text-soft text-center">
+          {size} · {frameLabel} · {DIMENSIONS[size] ?? ""}
+        </p>
+
+        {prints.length > 1 && (
+          <div className="mt-3 flex gap-2 overflow-x-auto pb-1">
+            {prints.map((p, i) => (
+              <button
+                key={p.id}
+                onClick={() => goTo(i)}
+                aria-label={p.title}
+                className={`flex-none w-16 h-16 rounded-lg overflow-hidden border-2 ${i === index ? "border-clay" : "border-transparent opacity-70 hover:opacity-100"}`}
+              >
+                <img src={p.image} alt={p.title} className="w-full h-full object-cover" />
+              </button>
+            ))}
+          </div>
+        )}
       </div>
 
+      {/* ---------- Details + enquiry ---------- */}
       <div>
         <h1 className="text-3xl font-semibold tracking-tight">{print.title}</h1>
         <p className="text-sm text-soft">{print.theme} · edition of {print.edition}</p>
