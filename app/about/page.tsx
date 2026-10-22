@@ -28,7 +28,7 @@ export default function About() {
         </details>
         <details className="border border-ink/10 rounded-xl bg-white p-4">
           <summary className="font-medium cursor-pointer">Is framing included?</summary>
-          <p className="mt-2 text-soft">Yes — every piece ships framed in your choice of black wood or walnut, ready to hang.</p>
+          <p className="mt-2 text-soft">Yes — every piece ships framed in your choice of black wood or maple, ready to hang.</p>
         </details>
         <details className="border border-ink/10 rounded-xl bg-white p-4">
           <summary className="font-medium cursor-pointer">What happens after I enquire?</summary>
