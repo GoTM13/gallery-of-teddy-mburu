@@ -11,18 +11,13 @@ export default async function Home() {
           Work made to live on <span className="text-clay">your wall</span>, not just your screen.
         </h1>
         <p className="mt-5 max-w-xl leading-relaxed text-soft">
-          Browse the collection, see any piece framed and sized in a real room, then send an
-          enquiry — we take it from there.
+          Explore the collection, preview any work framed, and send an enquiry. Every acquisition
+          begins with a conversation.
         </p>
         <div className="mt-7 flex gap-3">
           <a href="#collection" className="px-5 py-2.5 rounded-full text-sm font-medium bg-ink text-cream">
-            Browse the collection
+            Explore the collection
           </a>
-          {prints[0] && (
-            <Link href={`/print/${prints[0].id}`} className="px-5 py-2.5 rounded-full text-sm border border-clay text-clay">
-              See it in a real room →
-            </Link>
-          )}
         </div>
       </section>
 
