@@ -14,16 +14,16 @@ const DIMENSIONS: Record<string, string> = {
   A2: "42 × 59.4 cm",
 };
 
-// Image preview width per selected size — larger size, larger view.
-const VIEW_SCALE: Record<string, string> = { A4: "74%", A3: "96%", A2: "100%" };
+// Image preview height per selected size — sized by HEIGHT so portrait and
+// landscape prints both fit fully inside the viewer, no cropping.
+const VIEW_SCALE: Record<string, string> = { A4: "58%", A3: "82%", A2: "94%" };
 
 export default function PrintConfig({ prints, initialId }: { prints: Print[]; initialId: string }) {
   const initialIndex = Math.max(0, prints.findIndex((p) => p.id === initialId));
   const [index, setIndex] = useState(initialIndex);
   const print = prints[index] ?? prints[0];
 
-  const defaultSize = print.sizes.includes("A4") ? "A4" : print.sizes[0];
-  const [size, setSize] = useState(defaultSize);
+  const [size, setSize] = useState(print.sizes.includes("A4") ? "A4" : print.sizes[0]);
   const [frame, setFrame] = useState("black");
   const [sent, setSent] = useState(false);
   const [name, setName] = useState("");
@@ -34,7 +34,7 @@ export default function PrintConfig({ prints, initialId }: { prints: Print[]; in
   const frameColor = FRAMES.find((f) => f.id === frame)?.color ?? "#2b2b2b";
   const frameLabel = FRAMES.find((f) => f.id === frame)?.label;
   const valid = name.trim().length > 1 && /\S+@\S+\.\S+/.test(email);
-  const view = VIEW_SCALE[size] ?? "96%";
+  const view = VIEW_SCALE[size] ?? "82%";
 
   function goTo(i: number) {
     const next = (i + prints.length) % prints.length;
@@ -61,7 +61,10 @@ export default function PrintConfig({ prints, initialId }: { prints: Print[]; in
     <div className="mt-4 grid md:grid-cols-2 gap-8">
       {/* ---------- Image viewer + carousel ---------- */}
       <div>
-        <div className="relative rounded-2xl bg-sand border border-ink/10 overflow-hidden flex items-center justify-center" style={{ aspectRatio: "4/3" }}>
+        <div
+          className="relative rounded-2xl bg-sand border border-ink/10 overflow-hidden flex items-center justify-center px-10"
+          style={{ aspectRatio: "4/3" }}
+        >
           {prints.length > 1 && (
             <button
               onClick={() => goTo(index - 1)}
@@ -71,9 +74,27 @@ export default function PrintConfig({ prints, initialId }: { prints: Print[]; in
               ‹
             </button>
           )}
-          <div className="transition-all duration-500" style={{ width: view, padding: "1.2%" }}>
-            <div style={{ background: frameColor, padding: "2.5%", borderRadius: 3, boxShadow: "0 16px 36px rgba(30,20,10,0.35)" }}>
-              <img key={print.id} src={print.image} alt={print.title} className="w-full block" />
+          <div
+            className="transition-all duration-500"
+            style={{ height: view }}
+          >
+            <div
+              style={{
+                background: frameColor,
+                padding: "2.5%",
+                borderRadius: 3,
+                boxShadow: "0 16px 36px rgba(30,20,10,0.35)",
+                height: "100%",
+                boxSizing: "border-box",
+              }}
+            >
+              <img
+                key={print.id}
+                src={print.image}
+                alt={print.title}
+                className="block h-full w-auto max-w-full"
+                style={{ objectFit: "contain" }}
+              />
             </div>
           </div>
           {prints.length > 1 && (
