@@ -8,19 +8,32 @@ const FRAMES = [
   { id: "walnut", label: "Walnut", color: "#6b4430" },
 ];
 
-// NOTE: replace ROOM_IMAGE with your own room photo on Cloudinary for production.
-const ROOM_IMAGE =
-  "https://mistralaichatupprodswe.blob.core.windows.net/chat-images/assistant/99/29/aa/9929aa34-0e86-4795-a6b3-af6e93848863/ae085834-4dee-4ba1-b91a-988abfed5271/b3676cb8-97e6-4d78-861e-ae315d1de98c/54421587-e8cc-483d-83a3-3c5583d43dc5.jpg";
+// Room scenes — photos hosted on Cloudinary as:
+//   living_room_wall.jpg  /  bedroom_wall.jpg
+const SCENES = [
+  { id: "living", label: "Living room", image: "https://res.cloudinary.com/hp5e1kxp/image/upload/f_auto,q_auto,w_1200/living_room_wall.jpg" },
+  { id: "bedroom", label: "Bedroom", image: "https://res.cloudinary.com/hp5e1kxp/image/upload/f_auto,q_auto,w_1200/bedroom_wall.jpg" },
+];
+
+// Relative preview width on the wall per size (A3 reads larger than A4).
+const SIZE_SCALE: Record<string, string> = { A3: "40%", A2: "52%" };
+const DEFAULT_SCALE = "33%";
 
 export default function PrintConfig({ print }: { print: Print }) {
   const [size, setSize] = useState(print.sizes.includes("A4") ? "A4" : print.sizes[0]);
   const [frame, setFrame] = useState("black");
+  const [scene, setScene] = useState("living");
+  const [sceneOk, setSceneOk] = useState<Record<string, boolean>>({});
   const [sent, setSent] = useState(false);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [note, setNote] = useState("");
   const price = priceFor(print, size);
   const frameColor = FRAMES.find((f) => f.id === frame)?.color ?? "#2b2b2b";
+  const frameLabel = FRAMES.find((f) => f.id === frame)?.label;
+  const sceneObj = SCENES.find((s) => s.id === scene) ?? SCENES[0];
+  const sceneLoaded = sceneOk[scene] !== false;
+  const scale = SIZE_SCALE[size] ?? DEFAULT_SCALE;
   const valid = name.trim().length > 1 && /\S+@\S+\.\S+/.test(email);
 
   async function submit(e: React.FormEvent) {
@@ -30,7 +43,7 @@ export default function PrintConfig({ print }: { print: Print }) {
       name,
       email,
       note,
-      print: `${print.title} — ${size}, ${FRAMES.find((f) => f.id === frame)?.label}`,
+      print: `${print.title} — ${size}, ${frameLabel}`,
     });
     await fetch("/", { method: "POST", headers: { "Content-Type": "application/x-www-form-urlencoded" }, body: body.toString() });
     setSent(true);
@@ -39,15 +52,48 @@ export default function PrintConfig({ print }: { print: Print }) {
   return (
     <div className="mt-4 grid md:grid-cols-2 gap-8">
       <div>
-        <div className="relative rounded-2xl overflow-hidden shadow-xl" style={{ aspectRatio: "4/3" }}>
-          <img src={ROOM_IMAGE} alt="Sitting room" className="absolute inset-0 w-full h-full object-cover" />
-          <div className="absolute left-1/2 top-[14%] w-[38%] -translate-x-1/2">
+        <div
+          className="relative rounded-2xl overflow-hidden shadow-xl"
+          style={{
+            aspectRatio: "4/3",
+            background: sceneLoaded
+              ? undefined
+              : scene === "bedroom"
+                ? "linear-gradient(180deg, #f2ead9 0%, #ece2cf 72%, #d8c8b1 72%, #c5b196 100%)"
+                : "linear-gradient(180deg, #efe6d8 0%, #e9ddcc 70%, #d9c9b2 70%, #c9b69c 100%)",
+          }}
+        >
+          {sceneLoaded && (
+            <img
+              key={scene}
+              src={sceneObj.image}
+              alt={sceneObj.label}
+              className="absolute inset-0 w-full h-full object-cover"
+              onError={() => setSceneOk((prev) => ({ ...prev, [scene]: false }))}
+            />
+          )}
+          <div className="absolute left-1/2 top-[13%] -translate-x-1/2" style={{ width: scale, transition: "width 0.4s ease" }}>
             <div style={{ background: frameColor, padding: "2.5%", borderRadius: 2, boxShadow: "0 14px 30px rgba(30,20,10,0.45)" }}>
               <img src={print.image} alt={print.title} className="w-full block" />
             </div>
           </div>
         </div>
-        <p className="mt-2 text-xs text-soft text-center">In a real room — {size}, {FRAMES.find((f) => f.id === frame)?.label}</p>
+        <div className="mt-2 flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-xs text-soft">
+          <label className="inline-flex items-center gap-1.5">
+            <span className="uppercase tracking-wider text-ochre">See on wall</span>
+            <select
+              value={scene}
+              onChange={(e) => setScene(e.target.value)}
+              className="border border-ink/25 rounded-lg px-2 py-1 text-xs bg-white text-ink"
+            >
+              {SCENES.map((s) => (
+                <option key={s.id} value={s.id}>{s.label}</option>
+              ))}
+            </select>
+          </label>
+          <span>·</span>
+          <span>{size} · {frameLabel} · {size === "A3" ? "29.7 × 42 cm" : "21 × 29.7 cm"}</span>
+        </div>
       </div>
 
       <div>
