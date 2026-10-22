@@ -16,7 +16,7 @@ const DIMENSIONS: Record<string, string> = {
 
 // Image preview height per selected size — sized by HEIGHT so portrait and
 // landscape prints both fit fully inside the viewer, no cropping.
-const VIEW_SCALE: Record<string, string> = { A4: "58%", A3: "82%", A2: "94%" };
+const VIEW_SCALE: Record<string, string> = { A4: "68%", A3: "92%", A2: "97%" };
 
 export default function PrintConfig({ prints, initialId }: { prints: Print[]; initialId: string }) {
   const initialIndex = Math.max(0, prints.findIndex((p) => p.id === initialId));
@@ -34,7 +34,7 @@ export default function PrintConfig({ prints, initialId }: { prints: Print[]; in
   const frameColor = FRAMES.find((f) => f.id === frame)?.color ?? "#2b2b2b";
   const frameLabel = FRAMES.find((f) => f.id === frame)?.label;
   const valid = name.trim().length > 1 && /\S+@\S+\.\S+/.test(email);
-  const view = VIEW_SCALE[size] ?? "82%";
+  const view = VIEW_SCALE[size] ?? "92%";
 
   function goTo(i: number) {
     const next = (i + prints.length) % prints.length;
