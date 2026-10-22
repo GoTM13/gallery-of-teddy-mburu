@@ -11,13 +11,29 @@ const FRAMES = [
 // Room scenes — photos hosted on Cloudinary as:
 //   living_room_wall.jpg  /  bedroom_wall.jpg
 const SCENES = [
-  { id: "living", label: "Living room", image: "https://res.cloudinary.com/hp5e1kxp/image/upload/f_auto,q_auto,w_1200/living_room_wall.jpg" },
-  { id: "bedroom", label: "Bedroom", image: "https://res.cloudinary.com/hp5e1kxp/image/upload/f_auto,q_auto,w_1200/bedroom_wall.jpg" },
+  {
+    id: "living",
+    label: "Living room",
+    image: "https://res.cloudinary.com/hp5e1kxp/image/upload/f_auto,q_auto,w_1200/living_room_wall.jpg",
+    wallWidthCm: 350,   // approximate real width of the visible wall in the photo
+    hangTop: "26%",     // top edge of the frame, as % of the photo height
+  },
+  {
+    id: "bedroom",
+    label: "Bedroom",
+    image: "https://res.cloudinary.com/hp5e1kxp/image/upload/f_auto,q_auto,w_1200/bedroom_wall.jpg",
+    wallWidthCm: 300,
+    hangTop: "22%",
+  },
 ];
 
-// Relative preview width on the wall per size (A3 reads larger than A4).
-const SIZE_SCALE: Record<string, string> = { A3: "40%", A2: "52%" };
-const DEFAULT_SCALE = "33%";
+// Real print widths in cm (landscape orientation assumed; height follows the image aspect).
+const PRINT_WIDTH_CM: Record<string, number> = { A4: 21, A3: 29.7, A2: 42 };
+const FRAME_BORDER_CM = 3.4; // moulding width, both sides ≈ 1.7cm each
+
+// Visual boost so prints read clearly on camera without looking doll-sized.
+// 1.0 = strictly real-world proportions. ~1.4 is a good marketing balance.
+const EXAGGERATION = 1.4;
 
 export default function PrintConfig({ print }: { print: Print }) {
   const [size, setSize] = useState(print.sizes.includes("A4") ? "A4" : print.sizes[0]);
@@ -33,7 +49,12 @@ export default function PrintConfig({ print }: { print: Print }) {
   const frameLabel = FRAMES.find((f) => f.id === frame)?.label;
   const sceneObj = SCENES.find((s) => s.id === scene) ?? SCENES[0];
   const sceneLoaded = sceneOk[scene] !== false;
-  const scale = SIZE_SCALE[size] ?? DEFAULT_SCALE;
+
+  // Physical calibration: on-screen frame width as a share of the wall.
+  const printWidthCm = PRINT_WIDTH_CM[size] ?? 21;
+  const frameWidthCm = printWidthCm + FRAME_BORDER_CM;
+  const scalePercent = Math.min((frameWidthCm / sceneObj.wallWidthCm) * 100 * EXAGGERATION, 55);
+
   const valid = name.trim().length > 1 && /\S+@\S+\.\S+/.test(email);
 
   async function submit(e: React.FormEvent) {
@@ -72,10 +93,27 @@ export default function PrintConfig({ print }: { print: Print }) {
               onError={() => setSceneOk((prev) => ({ ...prev, [scene]: false }))}
             />
           )}
-          <div className="absolute left-1/2 top-[13%] -translate-x-1/2" style={{ width: scale, transition: "width 0.4s ease" }}>
-            <div style={{ background: frameColor, padding: "2.5%", borderRadius: 2, boxShadow: "0 14px 30px rgba(30,20,10,0.45)" }}>
+          <div
+            className="absolute left-1/2 -translate-x-1/2"
+            style={{
+              width: scalePercent + "%",
+              top: sceneObj.hangTop,
+              transition: "width 0.4s ease, top 0.4s ease",
+            }}
+          >
+            <div style={{ background: frameColor, padding: "3%", borderRadius: 2, boxShadow: "0 14px 30px rgba(30,20,10,0.45)" }}>
               <img src={print.image} alt={print.title} className="w-full block" />
             </div>
+            {/* soft shadow beneath the frame, grounds it on the wall */}
+            <div
+              style={{
+                height: 8,
+                margin: "2% 6% 0 6%",
+                background: "rgba(30,20,10,0.18)",
+                filter: "blur(6px)",
+                borderRadius: "50%",
+              }}
+            />
           </div>
         </div>
         <div className="mt-2 flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-xs text-soft">
