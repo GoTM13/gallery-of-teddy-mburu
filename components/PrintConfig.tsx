@@ -118,9 +118,17 @@ export default function PrintConfig({ prints, initialId }: { prints: Print[]; in
                 key={p.id}
                 onClick={() => goTo(i)}
                 aria-label={p.title}
-                className={`flex-none w-16 h-16 rounded-lg overflow-hidden border-2 ${i === index ? "border-clay" : "border-transparent opacity-70 hover:opacity-100"}`}
+                className={`relative flex-none w-16 h-16 rounded-lg overflow-hidden border-2 ${i === index ? "border-clay" : "border-transparent opacity-70 hover:opacity-100"}`}
               >
                 <img src={p.image} alt={p.title} className="w-full h-full object-cover" />
+                {p.soldOut && (
+                  <span
+                    className="absolute inset-x-0 bottom-0 text-center text-[9px] font-semibold text-white py-0.5"
+                    style={{ background: "rgba(43,38,32,0.8)" }}
+                  >
+                    SOLD OUT
+                  </span>
+                )}
               </button>
             ))}
           </div>
@@ -129,7 +137,17 @@ export default function PrintConfig({ prints, initialId }: { prints: Print[]; in
 
       {/* ---------- Details + enquiry ---------- */}
       <div>
-        <h1 className="text-3xl font-semibold tracking-tight">{print.title}</h1>
+        <div className="flex items-center gap-3">
+          <h1 className="text-3xl font-semibold tracking-tight">{print.title}</h1>
+          {print.soldOut && (
+            <span
+              className="px-3 py-1 rounded-full text-xs font-semibold tracking-wide text-white"
+              style={{ background: "rgba(43,38,32,0.9)" }}
+            >
+              Sold out
+            </span>
+          )}
+        </div>
         <p className="text-sm text-soft">{print.theme} · edition of {print.edition}</p>
         {print.description && <p className="mt-3 text-sm leading-relaxed text-soft">{print.description}</p>}
         <p className="mt-2 text-sm text-soft">Hand-signed archival print from a limited edition, framed and ready to hang.</p>
@@ -161,10 +179,18 @@ export default function PrintConfig({ prints, initialId }: { prints: Print[]; in
 
         <div className="mt-6 flex items-baseline justify-between border-t border-ink/10 pt-4">
           <span className="text-sm text-soft">Total ({size}, framed)</span>
-          <span className="text-2xl font-semibold">{price ? fmtKES(price) : "Price on enquiry"}</span>
+          <span className="text-2xl font-semibold">
+            {print.soldOut ? "Sold out" : price ? fmtKES(price) : "Price on enquiry"}
+          </span>
         </div>
 
-        {sent ? (
+        {print.soldOut ? (
+          <div className="mt-5 bg-white border border-ink/10 rounded-xl p-5 text-sm">
+            <div className="text-2xl mb-1">🌿</div>
+            <div className="font-semibold">This edition has sold out</div>
+            <p className="mt-1 text-soft">Join the list for the next drop — new editions are announced first to the list.</p>
+          </div>
+        ) : sent ? (
           <div className="mt-5 bg-white border border-ink/10 rounded-xl p-5 text-sm">
             <div className="text-2xl mb-1">🌿</div>
             <div className="font-semibold">Enquiry sent</div>
