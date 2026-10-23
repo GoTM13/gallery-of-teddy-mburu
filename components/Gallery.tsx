@@ -46,14 +46,22 @@ export default function Gallery({ prints }: { prints: Print[] }) {
                 transition={{ duration: 0.4, delay: i * 0.05 }}
               >
                 <Link href={`/print/${p.id}`} className="group w-full mb-5 break-inside-avoid block">
-                  <div className="rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-shadow bg-white outline outline-1 outline-ink/10">
+                  <div className="relative rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-shadow bg-white outline outline-1 outline-ink/10">
                     {/* full image, natural aspect ratio — no cropping */}
                     <img src={p.image} alt={p.title} loading="lazy" className="w-full h-auto block" />
+                    {p.soldOut && (
+                      <span
+                        className="absolute top-3 left-3 px-3 py-1 rounded-full text-xs font-semibold tracking-wide text-white shadow-md"
+                        style={{ background: "rgba(43,38,32,0.85)" }}
+                      >
+                        Sold out
+                      </span>
+                    )}
                   </div>
                   <div className="mt-2.5 flex justify-between items-baseline">
                     <span className="font-medium">{p.title}</span>
                     <span className="text-sm text-soft">
-                      {from !== Infinity ? `from ${fmtKES(from)} · framed` : <em>Price on enquiry</em>}
+                      {p.soldOut ? <em>Sold out</em> : from !== Infinity ? `from ${fmtKES(from)} · framed` : <em>Price on enquiry</em>}
                     </span>
                   </div>
                   <div className="text-xs uppercase tracking-wider text-ochre">
