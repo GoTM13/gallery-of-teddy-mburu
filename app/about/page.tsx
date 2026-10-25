@@ -20,6 +20,24 @@ export default function About() {
         a conversation. If a piece speaks to you or stirs a memory, I'd be delighted to hear from you
         and share more, before the piece finds its new home.
       </p>
+      <div className="mt-10 grid sm:grid-cols-2 gap-4 text-sm">
+        <div className="border border-ink/10 rounded-xl p-4 bg-white">
+          <div className="font-semibold">✉️ Email</div>
+          <p className="mt-1 text-soft">
+            <a href="mailto:galleryofteddymburu@outlook.com" className="hover:text-clay transition-colors">
+              galleryofteddymburu@outlook.com
+            </a>
+          </p>
+        </div>
+        <div className="border border-ink/10 rounded-xl p-4 bg-white">
+          <div className="font-semibold">📞 Phone / WhatsApp</div>
+          <p className="mt-1 text-soft">
+            <a href="tel:+254729647873" className="hover:text-clay transition-colors">
+              +254 729 647 873
+            </a>
+          </p>
+        </div>
+      </div>
       <h2 className="mt-14 text-2xl font-semibold">Frequently asked</h2>
       <div className="mt-4 space-y-3 text-sm">
         <details className="border border-ink/10 rounded-xl bg-white p-4">
