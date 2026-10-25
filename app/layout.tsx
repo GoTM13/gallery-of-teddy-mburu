@@ -16,6 +16,16 @@ export const metadata: Metadata = {
     siteName: "Gallery of Teddy Mburu",
     type: "website",
     url: SITE,
+    images: [
+      {
+        url: "https://res.cloudinary.com/hp5e1kxp/image/upload/f_auto,q_auto,w_1200/og_image.jpg",
+        width: 1200,
+        height: 630,
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
   },
 };
 
