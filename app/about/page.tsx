@@ -20,7 +20,7 @@ export default function About() {
         a conversation. If a piece speaks to you or stirs a memory, I'd be delighted to hear from you
         and share more, before the piece finds its new home.
       </p>
-      <div className="mt-10 grid sm:grid-cols-2 gap-4 text-sm">
+      <div className="mt-10 grid sm:grid-cols-3 gap-4 text-sm">
         <div className="border border-ink/10 rounded-xl p-4 bg-white">
           <div className="font-semibold">✉️ Email</div>
           <p className="mt-1 text-soft">
@@ -34,6 +34,19 @@ export default function About() {
           <p className="mt-1 text-soft">
             <a href="tel:+254729647873" className="hover:text-clay transition-colors">
               +254 729 647 873
+            </a>
+          </p>
+        </div>
+        <div className="border border-ink/10 rounded-xl p-4 bg-white">
+          <div className="font-semibold">📸 Instagram</div>
+          <p className="mt-1 text-soft">
+            <a
+              href="https://instagram.com/galleryofteddymburu"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-clay transition-colors"
+            >
+              @galleryofteddymburu
             </a>
           </p>
         </div>
