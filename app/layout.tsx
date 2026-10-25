@@ -43,7 +43,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         </header>
         {children}
         <footer className="border-t border-ink/10 py-8 text-center text-sm text-soft">
-          © {new Date().getFullYear()} Teddy Mburu · Nairobi, Kenya · Instagram @galleryofteddymburu
+          © {new Date().getFullYear()} Teddy Mburu · Nairobi, Kenya
+          <span className="mx-2">·</span>
+          <a href="mailto:galleryofteddymburu@outlook.com" className="hover:text-clay transition-colors">
+            galleryofteddymburu@outlook.com
+          </a>
         </footer>
       </body>
     </html>
